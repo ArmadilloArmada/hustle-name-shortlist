@@ -1,0 +1,47 @@
+# Weekly draft name shortlist — human reviews / approves / exports locally.
+# Does NOT send email and does NOT call paid WHOIS APIs.
+name: Weekly name shortlist
+
+on:
+  schedule:
+    # Monday 14:35 UTC
+    - cron: "35 14 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ensure config.yaml
+        run: |
+          if [ ! -f config.yaml ]; then
+            cp config.example.yaml config.yaml
+          fi
+
+      - name: Run name-shortlist pipeline (draft only)
+        # Template generator + skip DNS for a reliable CI draft pack.
+        run: python -m src --niche "developer tools" --vibe "calm,premium,playful" --skip-dns
+
+      - name: Upload out/ as draft artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: name-shortlist-draft
+          path: out/
+          if-no-files-found: error
+          retention-days: 14
