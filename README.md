@@ -79,6 +79,10 @@ Export refuses unapproved shortlists unless `--allow-unapproved` (demo only).
 | `OPENAI_API_KEY` | No | If set, names are generated via OpenAI; otherwise combinatorial templates |
 | `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini` |
 
+## Weekly schedule (GitHub Actions)
+
+Every Monday at **14:35 UTC**, [`.github/workflows/weekly-name-shortlist.yml`](.github/workflows/weekly-name-shortlist.yml) runs a **draft-only** pipeline (`python -m src … --skip-dns`) and uploads artifact **`name-shortlist-draft`** (no approve/export/send). Download from the Actions run → **Artifacts**, unzip into `out/`, then approve + export locally.
+
 ## Compliance notes
 
 - DNS lookups use public resolvers via `dnspython` (A records only).
