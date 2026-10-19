@@ -11,3 +11,8 @@ tlds:
   - ai
   - co
 out: out/shortlist.md
+
+# Delivery export defaults (used by docs; pass on CLI for now)
+# export:
+#   out_dir: out/export
+#   to: client@example.com
