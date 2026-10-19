@@ -1,0 +1,9 @@
+config.yaml
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+out/*.md
+!out/.gitkeep

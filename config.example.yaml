@@ -1,0 +1,13 @@
+# Copy to config.yaml and edit, or pass --niche / --vibe on the CLI.
+niche: "developer tools"
+vibe:
+  - calm
+  - premium
+  - playful
+count: 50
+tlds:
+  - com
+  - io
+  - ai
+  - co
+out: out/shortlist.md
