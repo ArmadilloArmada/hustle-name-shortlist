@@ -2,7 +2,9 @@
 
 Domain / brand-name shortlists for founders — Tier 0 hustle MVP.
 
-Generate ~50 name candidates from niche + vibe keywords, apply light trademark-ish heuristics (**not legal advice**), check free DNS/A-record hints (no paid WHOIS), and write a Markdown one-pager to `out/shortlist.md`.
+Generate ~50 name candidates from niche + vibe keywords, apply light trademark-ish heuristics (**not legal advice**), check free DNS/A-record hints (no paid WHOIS), write `out/shortlist.md`, then **human-approve** and **export** a client-ready Markdown/HTML pack + mailto draft under `out/export/`.
+
+**No auto-email.** Export only writes files and a `mailto:` URI for you to open manually.
 
 ## Requirements
 
@@ -18,23 +20,49 @@ pip install -r requirements.txt
 cp config.example.yaml config.yaml
 ```
 
-## Run
+## Workflow
 
-CLI args:
-
-```bash
-python -m src --niche "developer tools" --vibe "calm,premium,playful"
+```text
+generate → out/shortlist.md → human approve → out/export/ (md + html + mailto)
 ```
 
-Or via config:
+### 1. Generate
 
 ```bash
-cp config.example.yaml config.yaml
-# edit niche / vibe
-python -m src
+python -m src --niche "developer tools" --vibe "calm,premium,playful" --skip-dns
+# or: python -m src generate --niche "developer tools" --vibe "calm,premium,playful"
 ```
 
-Useful flags:
+### 2. Human approve
+
+Review `out/shortlist.md`, then stamp approval (content hash locked):
+
+```bash
+python -m src approve
+# optional: python -m src approve --note "trimmed to playful stems" --force
+python -m src approve --check
+```
+
+Writes `out/shortlist.approved.json`. Editing the shortlist after approve invalidates the stamp.
+
+### 3. Export client delivery (no send)
+
+```bash
+python -m src export --to client@example.com --client-name "Alex"
+```
+
+Writes under `out/export/`:
+
+| File | Purpose |
+|------|---------|
+| `delivery.md` | Client-ready Markdown one-pager |
+| `delivery.html` | HTML for paste / static preview |
+| `mailto.txt` | `mailto:` URI draft — **does not send** |
+| `README.txt` | What each file is |
+
+Export refuses unapproved shortlists unless `--allow-unapproved` (demo only).
+
+## Useful generate flags
 
 | Flag | Meaning |
 |------|---------|
@@ -43,10 +71,6 @@ Useful flags:
 | `--out out/shortlist.md` | Output path |
 | `--skip-dns` | Skip DNS (fast offline demo) |
 | `--no-config` | Ignore `config.yaml` |
-
-## Output
-
-- **`out/shortlist.md`** — ranked table with heuristic TM risk, flags, and DNS hints
 
 ## Environment
 
@@ -59,8 +83,9 @@ Useful flags:
 
 - DNS lookups use public resolvers via `dnspython` (A records only).
 - No paid WHOIS/availability API in v1.
-- Heuristics are **not** trademark clearance. Do not treat this as legal advice.
-- Human curation is expected — naming is taste-driven.
+- Heuristics are **not** trademark clearance. **This is not legal advice.**
+- Human curation + approval is required before client delivery.
+- Mailto export never auto-sends mail.
 
 ## Project layout
 
@@ -74,6 +99,14 @@ src/
   heuristics.py
   dns_check.py
   render.py
+  approve.py
+  export_delivery.py
 out/
   .gitkeep
+  shortlist.md              # after generate
+  shortlist.approved.json   # after approve
+  export/                   # after export
+    delivery.md
+    delivery.html
+    mailto.txt
 ```
